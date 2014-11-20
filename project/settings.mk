@@ -2,8 +2,8 @@
 ##  BUILD VARIABLES                                                          ##
 ###############################################################################
 
-export CFLAGS =
-export LDFLAGS =
+#export CFLAGS  = 
+export LDFLAGS = 
 export ARFLAGS =
 
 ###############################################################################
@@ -28,20 +28,28 @@ ifeq ($(OS),Darwin)
 ARCH = $(shell uname -m)
 DYNAMIC_SUFFIX=dylib
 DYNAMIC_FLAG=-dynamiclib
+else 
+ifeq ($(OS),AIX)
+ARCH = $(shell uname -p)
+DYNAMIC_SUFFIX=so
+DYNAMIC_FLAG=-shared
+CFLAGS += -maix64
+LDFLAGS += -maix64
 else
 ARCH = $(shell arch)
 DYNAMIC_SUFFIX=so
 DYNAMIC_FLAG=-shared
 endif
+endif
 
-CC = cc
+CC = gcc
 CC_FLAGS =
 
-LD = cc
-LD_FLAGS =
+LD = gcc
+LD_FLAGS =-shared
 
-AR = ar
-AR_FLAGS =
+AR = /usr/bin/ar  
+AR_FLAGS = -c -r -X64 -o 
 
 ###############################################################################
 ##  SOURCE PATHS                                                             ##
@@ -160,7 +168,6 @@ endef
 define archive
 	@if [ ! -d `dirname $@` ]; then mkdir -p `dirname $@`; fi
 	$(strip $(AR) \
-		rcs \
 		$(AR_FLAGS) \
 		$(ARFLAGS) \
 		$@ \
