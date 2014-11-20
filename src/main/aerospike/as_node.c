@@ -25,6 +25,10 @@
 #include <citrusleaf/cf_socket.h>
 #include <errno.h> //errno
 
+#if defined(__PPC__)
+#include <fcntl.h>
+#endif
+
 // Replicas take ~2K per namespace, so this will cover most deployments:
 #define INFO_STACK_BUF_SIZE (16 * 1024)
 
@@ -140,7 +144,12 @@ static int
 is_connected(int fd)
 {
 	uint8_t buf[8];
+#if !defined(__PPC__)
 	ssize_t rv = recv(fd, (void*)buf, sizeof(buf), MSG_PEEK | MSG_DONTWAIT | MSG_NOSIGNAL);
+#else
+        fcntl(fd, F_SETFL, O_NONBLOCK);
+	ssize_t rv = recv(fd, (void*)buf, sizeof(buf), MSG_PEEK | MSG_NOSIGNAL);
+#endif
 	
 	if (rv == 0) {
 		cf_debug("Connected check: Found disconnected fd %d", fd);

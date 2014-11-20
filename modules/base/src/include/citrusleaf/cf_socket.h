@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__PPC__)
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>

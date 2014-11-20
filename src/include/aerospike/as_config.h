@@ -24,7 +24,7 @@
  *	MACROS
  *****************************************************************************/
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__PPC__)
 /**
  * Default path to the system UDF files.
  */

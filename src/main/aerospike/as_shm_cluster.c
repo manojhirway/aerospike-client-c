@@ -25,7 +25,9 @@
 #include <errno.h>
 #include <string.h>
 #include <signal.h>
+#if !defined(__PPC__)
 #include <sys/sysctl.h>
+#endif
 #include <sys/shm.h>
 
 /******************************************************************************
@@ -86,7 +88,7 @@ as_shm_dump_partition_tables(as_cluster_shm* cluster_shm)
 static size_t
 as_shm_get_max_size()
 {
-#ifdef __linux__
+#if defined(__linux__) || defined(__PPC__)
 	char* fn = "/proc/sys/kernel/shmmax";
 	size_t shm_max;
 	FILE *f = fopen(fn, "r");

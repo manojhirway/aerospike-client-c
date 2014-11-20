@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 
-#if defined(__linux__)
+#if defined(__linux__) 
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -44,6 +44,13 @@
 #if defined(__APPLE__)
 #define SOL_TCP IPPROTO_TCP
 #endif // __APPLE__
+
+#if defined(__PPC__)
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#define SOL_TCP IPPROTO_TCP
+#endif // __PPC__
 
 #define STACK_LIMIT (16 * 1024)
 
@@ -516,7 +523,7 @@ cf_socket_write_forever(int fd, uint8_t *buf, size_t buf_len)
 
 #endif // __linux__
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__) || defined(__PPC__)
 // Use select() implementation for both Linux and Mac.
 // #if defined(__APPLE__)
 

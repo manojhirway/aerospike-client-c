@@ -35,7 +35,11 @@ cf_process_privsep(uid_t uid, gid_t gid)
         return;
 
     /* Drop all auxiliary groups */
+#if defined(__PPC__)
+    if (0 > setgroups(0, (gid_t *)0)){
+#else
     if (0 > setgroups(0, (const gid_t *)0)){
+#endif
         cf_error("Could not set groups: %s", strerror(errno));
 //        cf_crash(CF_MISC, CF_GLOBAL, CF_CRITICAL, "setgroups: %s", cf_strerror(errno));
         exit(-1);

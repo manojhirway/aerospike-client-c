@@ -505,12 +505,28 @@ cl_rv citrusleaf_udf_put(as_cluster *asc, const char * filename, as_bytes *conte
 	cf_b64_encode(content->value, content->size, content_base64);
 	content_base64[encoded_len] = 0;
 
+#if !defined(__PPC__)
 	if (! asprintf(&query, "udf-put:filename=%s;content=%s;content-len=%d;udf-type=%s;",
 			filebase, content_base64, encoded_len, cl_udf_type_str[udf_type])) {
 		fprintf(stderr, "Query allocation failed");
 		as_string_destroy(&filename_string);
 		return CITRUSLEAF_FAIL_CLIENT;
 	}
+#else
+        // Calculate the needed length of the buffer with a safety margin of some bytes
+        int buffer_length = sizeof("udf-put:filename=;content=;content-len=;udf-type=;")
+          + strlen(filebase) + strlen(content_base64) + strlen(cl_udf_type_str[udf_type]) + 64;
+
+        query = malloc(buffer_length);
+        if (query == 0) {
+		fprintf(stderr, "Query allocation failed");
+		as_string_destroy(&filename_string);
+		return CITRUSLEAF_FAIL_CLIENT;
+	}
+
+        snprintf(query, buffer_length, "udf-put:filename=%s;content=%s;content-len=%d;udf-type=%s;",
+			filebase, content_base64, encoded_len, cl_udf_type_str[udf_type]);
+#endif
 	
 	as_string_destroy(&filename_string);
 	// fprintf(stderr, "QUERY: |%s|\n",query);

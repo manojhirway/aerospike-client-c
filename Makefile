@@ -21,11 +21,17 @@ O = 3
 # Make-local Compiler Flags
 CC_FLAGS = -std=gnu99 -g -Wall -fPIC -O$(O)
 CC_FLAGS += -fno-common -fno-strict-aliasing -finline-functions
+ifeq ($(OS),AIX)
+CC_FLAGS += -maix64 -DMARCH_$ARCH
+else
 CC_FLAGS += -march=nocona -DMARCH_$(ARCH)
+endif
 CC_FLAGS += -D_FILE_OFFSET_BITS=64 -D_REENTRANT -D_GNU_SOURCE $(EXT_CFLAGS)
 
 ifeq ($(OS),Darwin)
 CC_FLAGS += -D_DARWIN_UNLIMITED_SELECT
+else ifeq ($(OS),AIX)
+CC_FLAGS += -shared
 else
 CC_FLAGS += -rdynamic
 endif
@@ -35,7 +41,11 @@ CC_FLAGS += -I$(CF)/include
 endif
 
 # Linker flags
+ifeq ($(OS),AIX)
+LD_FLAGS = $(LDFLAGS) -L/data/home/sxd/lib -llua -lpthread -lcrypto -lm -lz -fPIC
+else
 LD_FLAGS = $(LDFLAGS) -lm -fPIC
+endif
 
 ifeq ($(OS),Darwin)
 LD_FLAGS += -undefined dynamic_lookup

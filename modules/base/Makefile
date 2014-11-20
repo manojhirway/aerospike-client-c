@@ -15,7 +15,11 @@ O = 3
 ifeq ($(OS),Darwin)
 CC_FLAGS = -std=gnu99 -g -Wextra
 else
+ifeq ($(OS),AIX)
+CC_FLAGS = -std=gnu99 -g -shared -Wextra
+else
 CC_FLAGS = -std=gnu99 -g -rdynamic -Wextra
+endif
 endif
 CC_FLAGS += -fno-common -fno-strict-aliasing -fPIC -O$(O)
 CC_FLAGS += -D_FILE_OFFSET_BITS=64 
@@ -23,7 +27,11 @@ CC_FLAGS += -D_REENTRANT
 CC_FLAGS += -D_GNU_SOURCE
 
 # Make-local Linker Flags
+ifeq ($(OS),AIX)
+LD_FLAGS = -Wall -Winline -shared
+else
 LD_FLAGS = -Wall -Winline -rdynamic
+endif
 
 # DEBUG Settings
 ifdef DEBUG
